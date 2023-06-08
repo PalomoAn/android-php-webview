@@ -1,0 +1,137 @@
+<!-- PHP code to establish connection with the database -->
+<?php
+
+// Database connection configuration
+$servername = 'localhost';
+$username = 'root';
+$password = 'usbw';
+$database = 'minisuper';
+
+// Create a connection
+$mysqli = new mysqli($servername, $username, $password, $database);
+
+// Check the connection
+if ($mysqli->connect_error) {
+    die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+}
+
+// Initialize variables for search
+$idComProd = "";
+
+// Check if a search form is submitted
+if (isset($_POST['search'])) {
+    // Get the search value from the form
+    $idComProd = $_POST['idComProd'];
+
+    // Construct the SQL query based on the search value
+    $sql = "SELECT * FROM compraproductos WHERE idComProd = '$idComProd'";
+
+    $result = $mysqli->query($sql);
+} else {
+    // Default query to fetch all records
+    $sql = "SELECT * FROM compraproductos";
+    $result = $mysqli->query($sql);
+}
+?>
+
+<!-- HTML code to display the search form and the table -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Table</title>
+    <!-- CSS FOR STYLING THE PAGE -->
+    <style>
+        table {
+            margin: 0 auto;
+            font-size: large;
+            border: 1px solid black;
+        }
+
+        h1 {
+            text-align: center;
+            color: #006600;
+            font-size: xx-large;
+            font-family: 'Gill Sans', 'Gill Sans MT',
+                ' Calibri', 'Trebuchet MS', 'sans-serif';
+        }
+
+        td {
+            background-color: #E4F5D4;
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            font-weight: bold;
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        td {
+            font-weight: lighter;
+        }
+
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+
+        .search-form input[type="submit"] {
+            padding: 8px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <h1>Dynamic Table</h1>
+
+        <!-- Search form -->
+        <form class="search-form" method="POST">
+            <input type="text" name="idComProd" placeholder="Enter idComProd" value="<?php echo $idComProd; ?>">
+            <input type="submit" name="search" value="Search">
+        </form>
+
+        <?php if ($result && $result->num_rows > 0) { ?>
+            <!-- Table to display the records -->
+            <table>
+                <tr>
+                    <th>idComProd</th>
+                    <th>seccion</th>
+                    <th>nomProd</th>
+                    <th>cantidad</th>
+                    <th>fechaCompra</th>
+                    <th>ttComProd</th>
+                </tr>
+                <?php while ($row = $result->fetch_assoc()) { ?>
+                    <tr>
+                        <td><?php echo $row['idComProd']; ?></td>
+                        <td><?php echo $row['seccion']; ?></td>
+                        <td><?php echo $row['nomProd']; ?></td>
+                        <td><?php echo $row['cantidad']; ?></td>
+                        <td><?php echo $row['fechaCompra']; ?></td>
+                        <td><?php echo $row['ttComProd']; ?></td>
+                    </tr>
+                <?php } ?>
+            </table>
+        <?php } else { ?>
+            <p>No records found.</p>
+        <?php } ?>
+    </section>
+</body>
+
+</html>
